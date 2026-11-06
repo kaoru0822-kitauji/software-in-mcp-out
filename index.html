@@ -6,7 +6,7 @@
   <title>Software In, MCP Out</title>
   <meta name="description" content="Given only FreeCAD's binaries and a reverse-engineering toolkit, LLM agents build their own MCP server for it. With it they beat computer use; without reverse engineering the MCPs fail.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Software In, MCP Out: LLM agents can reverse-engineer an application into its own MCP server">
+  <meta property="og:title" content="Software In, MCP Out: Reverse apps into MCP servers via LLM agents">
   <meta property="og:description" content="Given only FreeCAD's binaries and a reverse-engineering toolkit, LLM agents build their own MCP server for it. With it they beat computer use; without reverse engineering the MCPs fail.">
   <meta property="og:image" content="https://kaoru0822-kitauji.github.io/software-in-mcp-out/media/enclosure.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,8 +18,8 @@
 <header>
   <div class="band">
     <div class="col">
-      <p class="kicker">Software in, MCP out</p>
-      <h1>LLM agents can reverse-engineer an application into its own MCP server</h1>
+      <h1><span class="nw">Software In,</span> <span class="hl nw">MCP Out</span></h1>
+      <p class="subtitle">Reverse apps into MCP servers via LLM agents</p>
     </div>
   </div>
   <div class="col">
@@ -33,7 +33,7 @@
 
   <div class="tldr">
     <b>TL;DR</b>
-    <p>We gave GLM-5.3 and Kimi K2.6 only FreeCAD's installed binaries and REA, a reverse-engineering toolkit, and each built its own MCP server for FreeCAD. With its MCP, Kimi passed 87% of task checks against 33% for computer use, and GLM-5.3 passed every check on our longest task in all three attempts. Built from the model's memory alone, without REA, neither model's MCP got past its first call.</p>
+    <p><b>Hand an LLM agent the binaries of FreeCAD and a reverse-engineering toolkit, and 18 minutes later it returns a working MCP server, built without source code or docs.</b> With the MCP it built, Kimi K2.6 finishes 3 of 5 CAD tasks where computer use finishes 1. On our longest task, a two-part enclosure with 26 linked features, GLM-5.3 passes all 21 checks in 79 seconds on average. Take the toolkit away and let the model build from memory, and its MCP fails on the very first call.</p>
   </div>
 
   <figure class="teaser-fig" aria-label="Three results: build, use, remove REA">
