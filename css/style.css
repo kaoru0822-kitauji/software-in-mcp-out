@@ -12,7 +12,7 @@
   --accent-ink: #b5460f;
   --accent-soft: #fbe8dd;
   --on-accent: #ffffff;
-  --gui: #4f74a0;           /* GUI runs */
+  --gui: #4f74a0;           /* computer-use runs */
   --gui-soft: #dfe7f1;
   --mem: #8a939c;           /* memory-only runs (hatched) */
   --mem-soft: #e9ecef;
@@ -404,3 +404,9 @@ td.task { font-family: var(--mono); font-size: 13.5px; white-space: nowrap; }
 
 
 @media (prefers-reduced-motion: reduce) { .bc-bar, .pipe-svg .stage rect { transition: none; } }
+
+/* ---------- Figure 5: run videos ---------- */
+.vid-stat { font-size: 15px; font-variant-numeric: tabular-nums; }
+.vid-wrap { overflow: hidden; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
+.vid-wrap video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--panel); }
+.card .arrow { color: var(--fg); }

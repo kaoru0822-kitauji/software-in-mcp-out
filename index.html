@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Software In, MCP Out</title>
-  <meta name="description" content="Given only an application's binaries and a reverse-engineering toolkit, an LLM agent builds an MCP server for it. Agents using those MCPs beat the GUI; without reverse engineering, the MCPs fail.">
+  <meta name="description" content="Given only FreeCAD's binaries and a reverse-engineering toolkit, LLM agents build their own MCP server for it. With it they beat computer use; without reverse engineering the MCPs fail.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Software In, MCP Out: LLM agents can reverse-engineer an application into its own MCP server">
-  <meta property="og:description" content="Given only an application's binaries and a reverse-engineering toolkit, an LLM agent builds an MCP server for it. Agents using those MCPs beat the GUI; without reverse engineering, the MCPs fail.">
+  <meta property="og:description" content="Given only FreeCAD's binaries and a reverse-engineering toolkit, LLM agents build their own MCP server for it. With it they beat computer use; without reverse engineering the MCPs fail.">
+  <meta property="og:image" content="https://kaoru0822-kitauji.github.io/software-in-mcp-out/media/enclosure.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
@@ -17,7 +18,7 @@
 <header>
   <div class="band">
     <div class="col">
-      <p class="kicker">Software in, MCP out:</p>
+      <p class="kicker">Software in, MCP out</p>
       <h1>LLM agents can reverse-engineer an application into its own MCP server</h1>
     </div>
   </div>
@@ -32,13 +33,10 @@
 
   <div class="tldr">
     <b>TL;DR</b>
-    <p>We find that LLM agents are surprisingly good at turning an application they can only observe from the outside into an MCP server for it. We give an agent the installed binaries of FreeCAD and <b>REA</b>, a reverse-engineering toolkit exposed as MCP tools, and nothing else: no source, no documentation, no network, and no idea which tasks it is building for. <b>The agent analyzes the binary, tries things on the running program, writes an MCP server, then checks and refines it on its own.</b> One build took 18 minutes and produced 19 tools that run inside FreeCAD's own process.</p>
-    <p>The MCPs agents build this way work. <b>With the MCP it built, Kimi K2.6 passes 87% of task checks, against 33% through FreeCAD's GUI</b>, using less than half the time and one sixth of the tokens. GLM-5.3 with its own MCP passes every check on all five tasks.</p>
-    <p><b>Take REA away and the MCPs fail.</b> Built from the model's memory of FreeCAD alone, GLM-5.3's MCP makes no progress past the starting file on any task, and Kimi's scores below the GUI.</p>
-    <p>An application no longer has to ship an MCP server for agents to use it well. Given the binary, an agent can build one.</p>
+    <p>We gave GLM-5.3 and Kimi K2.6 only FreeCAD's installed binaries and REA, a reverse-engineering toolkit, and each built its own MCP server for FreeCAD. With its MCP, Kimi passed 87% of task checks against 33% for computer use, and GLM-5.3 passed every check on our longest task in all three attempts. Built from the model's memory alone, without REA, neither model's MCP got past its first call.</p>
   </div>
 
-  <figure class="teaser-fig" aria-label="Three results: build, use, ablate">
+  <figure class="teaser-fig" aria-label="Three results: build, use, remove REA">
     <div class="teaser">
       <div class="tz">
         <div class="tz-step">Build</div>
@@ -53,12 +51,12 @@
       <div class="tz">
         <div class="tz-step">Use</div>
         <div class="tz-task">Revise five FreeCAD projects, short to long.</div>
-        <div class="tz-vis" role="img" aria-label="Kimi K2.6 passes 33 percent of checks through the GUI and 87 percent with its own MCP">
-          <div class="tz-col"><div class="tz-bar s-gui" style="height:30.4px"><span>33%</span></div><div class="tz-bl">GUI</div></div>
+        <div class="tz-vis" role="img" aria-label="Kimi K2.6 passes 33 percent of checks with computer use and 87 percent with its own MCP">
+          <div class="tz-col"><div class="tz-bar s-gui" style="height:30.4px"><span>33%</span></div><div class="tz-bl">Computer use</div></div>
           <div class="tz-col"><div class="tz-bar s-rea" style="height:80.1px"><span>87%</span></div><div class="tz-bl">Own MCP</div></div>
         </div>
         <div class="tz-who">Kimi K2.6, % of task checks passed</div>
-        <div class="tz-out"><span class="tz-big">3 of 5</span><span class="tz-note">tasks fully done, vs 1 of 5 in the GUI</span></div>
+        <div class="tz-out"><span class="tz-big">3 of 5</span><span class="tz-note">tasks fully done, vs 1 of 5 with computer use</span></div>
       </div>
       <div class="tz">
         <div class="tz-step">Remove REA</div>
@@ -73,19 +71,11 @@
     </div>
   </figure>
 
-  <p>If you wanted an agent to use a desktop application it has never seen, with no API documentation and no MCP server, what would you give it? Today the answer is screenshots and a mouse. It works, slowly. On five FreeCAD tasks, Kimi K2.6 spent 142 minutes and 66 million tokens in the GUI and fully finished one task. An MCP server changes the picture: the agent gets typed tools for what the application can actually do. The catch is that someone has to write that server, and most software doesn't have one.</p>
-  <p>So we let the agent write it, starting from the application as shipped. It gets the binaries and REA, a reverse-engineering toolkit that exposes binary inspection and Frida-based runtime instrumentation as MCP tools. From there it has to work out how to drive the program from the outside, build a server around that, and prove to itself that the server works.</p>
-  <p>In this post, we show three things:</p>
-  <ol>
-    <li><b>Agents can build an MCP from binaries alone.</b> We describe the build loop as a reusable tool, then follow one complete build of FreeCAD's MCP, minute by minute.</li>
-    <li><b>The MCPs they build beat the GUI.</b> In Experiment 1, Kimi K2.6 passes 87% of task checks with the MCP it built and 33% through the GUI.</li>
-    <li><b>Reverse engineering is what makes them work.</b> In Experiment 2, the same builds without REA produce MCPs that fail on their first call.</li>
-  </ol>
+  <p>Through computer use, with screenshots, mouse and keyboard, Kimi K2.6 needed 142 minutes and 66M tokens for five FreeCAD tasks and finished one of them. An MCP server would give it typed tools instead, but FreeCAD doesn't ship one, and most desktop software doesn't either. So we asked the agent to build one from the installed binaries. It gets REA, a reverse-engineering toolkit that exposes binary inspection and Frida instrumentation as MCP tools, and no source, documentation or network.</p>
 
   <!-- ===================================================== -->
-  <h2 id="pipeline">Software in, MCP out</h2>
-  <p>The tool is one agent session running a four-step loop in an offline sandbox. It <b>analyzes</b> the package to find places where an outside program could take control. It <b>looks things up or tries them</b>, learning how the program behaves from documentation where that exists and from small experiments on the live process. It <b>builds</b> an MCP server from what it observed, choosing the tools and their names itself. And it <b>checks and refines</b> the server against the real program, going back to fix code or run new experiments when something breaks.</p>
-  <p>We run it in a deliberately hard setting. Documentation is off in every run in this post, so what the agent knows about FreeCAD it either remembered or found by trying. The builder also never sees a task: step 4 runs on test workflows the agent writes itself, and the benchmark tasks arrive only after the MCP is frozen.</p>
+  <h2 id="pipeline">The build loop</h2>
+  <p>One agent session runs the loop in an offline sandbox. It analyzes the package, looks things up or tries them on the running program, builds a server, and checks the server against the program, going back a step when a check fails. Documentation is switched off in all of our runs, so the agent learns about FreeCAD only by trying. It also never sees the benchmark tasks.</p>
 
   <figure class="pipe" id="fig-pipe">
     <div class="fig-tools">
@@ -130,7 +120,7 @@
         <rect x="262" y="58" width="112" height="90" rx="8"/>
         <circle class="badge" cx="280" cy="77" r="10"/><text class="badge-t" x="280" y="81" text-anchor="middle">2</text>
         <text class="t-st" x="272" y="110">Look up / try</text>
-        <text class="t-sub m-rea" x="272" y="127">docs: off here</text>
+        <text class="t-sub m-rea" x="272" y="127">docs off here</text>
         <text class="t-sub m-rea" x="272" y="141">probe live app</text>
         <text class="t-sub m-mem" x="272" y="127">app can't run,</text>
         <text class="t-sub m-mem" x="272" y="141">memory only</text>
@@ -266,11 +256,10 @@
     </svg>
 
     <div class="stage-detail" id="stage-detail" aria-live="polite"></div>
-    <figcaption><b>Figure 1.</b> The build loop. Each step shows what the GLM-5.3 build of FreeCAD's MCP did there. <b>Memory only</b> shows the ablation from Experiment 2: REA and the target files are withheld, so steps 1 and 2 have nothing to work on and step 4 can only check that the server starts and lists its tools.</figcaption>
+    <figcaption><b>Figure 1.</b> The build loop. Each step shows what it did in GLM-5.3's FreeCAD build. <b>Memory only</b> is the ablation in Experiment 2, where REA and the target files are withheld.</figcaption>
   </figure>
 
   <h3>What goes in and what comes out</h3>
-  <p>The input describes what the software is, never what to build. The output is a directory the agent writes and a runnable image. A client of the finished MCP sees only its tool list, so usage guidance has to live in the tool descriptions.</p>
   <div class="contract">
     <div>
       <h4>Input, read-only</h4>
@@ -294,17 +283,10 @@
 <pre><span class="k">docker run</span> -i --cap-add=SYS_PTRACE \
   -v "$WORK":/workspace -v "$EVIDENCE":/evidence  "$IMAGE"</pre>
   </div>
-  <p>Every MCP the loop delivers:</p>
-  <ul class="rules">
-    <li>runs the application's own binary, exactly as shipped;</li>
-    <li>executes each operation inside the application's process, through instrumentation the agent discovered;</li>
-    <li>takes data as arguments, never code;</li>
-    <li>is built offline, within a three-hour budget.</li>
-  </ul>
 
   <!-- ===================================================== -->
-  <h2 id="build">How does an agent build an MCP from binaries?</h2>
-  <p>Here is GLM-5.3 building FreeCAD's MCP. The whole run took 18 minutes and 152 tool calls, well inside its three-hour budget. Two thirds of those calls went to step 2: eleven probe scripts and a series of REA sessions against a live FreeCAD process. Writing the server itself took 7 calls. The quotes are the agent's own messages from the run, unedited.</p>
+  <h2 id="build">One build, from the logs</h2>
+  <p>GLM-5.3 finished this build in 18 minutes and 152 tool calls, against a three-hour budget, and spent two thirds of the calls on step 2. The quotes are the agent's own messages.</p>
 
   <figure class="tl" id="fig-tl">
     <div class="tl-area">
@@ -326,50 +308,50 @@
       <span><i class="sw sw-tick" style="background:var(--ok);width:3px"></i>image build or smoke test</span>
     </div>
     <ol class="tl-list" id="tl-list"></ol>
-    <figcaption><b>Figure 2.</b> Every tool call in the build, and fourteen moments from it. Click a number to jump between the timeline and the agent's words.</figcaption>
+    <figcaption><b>Figure 2.</b> Every tool call in the build. Click a number to see what the agent wrote at that moment.</figcaption>
   </figure>
 
   <h3>What it learned by trying</h3>
-  <p>Much of what made the server work is not written down anywhere. It is how this particular build behaves: how Debian packaged it, what its libpython exports, which calls crash it. The agent found each of these by running an experiment, and each one changed the design.</p>
+  <p>These six facts are about this particular FreeCAD build and how Debian packaged it. The agent found each one by experiment and changed the server because of it.</p>
 
   <figure>
     <div class="cards">
       <div class="card">
         <div class="card-top"><span>Process</span><span>minute 3.7</span></div>
         <p>FreeCAD's console binary exits as soon as its stdin is not a terminal.</p>
-        <p class="arrow"><b>So:</b> run it under a PTY (<code>script -qec</code>) with stdin held open. The interpreter then waits at its prompt with the GIL released, ready for injected calls.</p>
+        <p class="arrow">The server runs it under a PTY with stdin held open.</p>
       </div>
       <div class="card">
         <div class="card-top"><span>Exports</span><span>minute 5.1</span></div>
         <p>This libpython build does not export <code>PyObject_CallOneArgs</code>.</p>
-        <p class="arrow"><b>So:</b> every call builds an argument tuple and goes through <code>PyObject_CallObject</code>.</p>
+        <p class="arrow">Every call goes through an argument tuple and <code>PyObject_CallObject</code>.</p>
       </div>
       <div class="card">
         <div class="card-top"><span>C API</span><span>minute 6.6</span></div>
-        <p><code>PyImport_ImportModule</code> takes a C string. Passing a Python string made FreeCAD try to import a module named <code>'\x01'</code>: the object's reference count byte.</p>
-        <p class="arrow"><b>So:</b> a C-string helper that keeps each buffer alive for the duration of the call.</p>
+        <p><code>PyImport_ImportModule</code> wants a C string. Given a Python string, it tried to import a module named <code>'\x01'</code>, the object's reference count byte.</p>
+        <p class="arrow">A helper keeps each C string alive for the duration of the call.</p>
       </div>
       <div class="card">
         <div class="card-top"><span>Permissions</span><span>minute 7.9</span></div>
-        <p>Attaching to a running FreeCAD is refused: <code>ptrace_scope</code> is 1, so a process may attach only to its own descendants.</p>
-        <p class="arrow"><b>So:</b> the server starts FreeCAD itself, finds the child process in <code>/proc</code>, and attaches to that.</p>
+        <p><code>ptrace_scope</code> is 1, so attaching to a FreeCAD that is already running is refused.</p>
+        <p class="arrow">The server starts FreeCAD itself and attaches to its own child process.</p>
       </div>
       <div class="card">
         <div class="card-top"><span>Crashes</span><span>minute 12.2</span></div>
-        <p><code>Import.export</code>, <code>Part.export</code> for STEP, and <code>Mesh.insert</code> crash the process in console mode. <code>Part.export</code> for STL silently writes nothing.</p>
-        <p class="arrow"><b>So:</b> export through <code>Shape.exportStep</code>, <code>exportIges</code> and <code>exportStl</code>, with <code>Part.makeCompound</code> for several objects.</p>
+        <p><code>Import.export</code>, <code>Part.export</code> for STEP and <code>Mesh.insert</code> crash the process in console mode.</p>
+        <p class="arrow">Exports go through <code>Shape.exportStep</code>, <code>exportIges</code> and <code>exportStl</code>.</p>
       </div>
       <div class="card">
         <div class="card-top"><span>Semantics</span><span>minute 13.7</span></div>
         <p><code>Import.insert</code> into a document name that doesn't exist quietly creates a new, unnamed document.</p>
-        <p class="arrow"><b>So:</b> <code>import_file</code> creates and activates the target document before importing.</p>
+        <p class="arrow"><code>import_file</code> creates the target document before importing.</p>
       </div>
     </div>
-    <figcaption><b>Figure 3.</b> Six findings from step 2 and the design decision each one forced. Times are minutes into the build.</figcaption>
+    <figcaption><b>Figure 3.</b> Six findings from step 2 and the change each one made to the server.</figcaption>
   </figure>
 
   <h3>How a tool call reaches FreeCAD</h3>
-  <p>The finished server has two parts. A Node process speaks MCP over stdio, starts FreeCAD under a PTY, and attaches to it with Frida. An agent script it injects runs inside FreeCAD and performs every operation through the CPython C API: import a module, read an attribute, call a method with data arguments. No Python source is ever evaluated, and FreeCAD writes every file itself.</p>
+  <p>The Node server starts FreeCAD under a PTY, attaches with Frida and injects <code>agent.js</code>. A tool call then turns into a few C API calls on FreeCAD's own interpreter. No Python source is evaluated, and FreeCAD writes the files itself.</p>
 
   <figure>
     <div class="scroll-x">
@@ -439,60 +421,50 @@
         <text x="666" y="196" text-anchor="end" class="t-lab">FreeCAD writes</text>
       </svg>
     </div>
-    <figcaption><b>Figure 4.</b> The path of one tool call through the server GLM-5.3 built. Orange marks the part the agent discovered and injected.</figcaption>
-  </figure>
-
-  <figure class="codefig">
-<pre><span class="c">// agent.js, as written by the agent: every tool is one entry in OPS,</span>
-<span class="c">// run on FreeCAD's interpreter with the GIL held.</span>
-rpc.exports.op = <span class="k">function</span> (name, args) {
-  <span class="k">const</span> fn = OPS[name];
-  <span class="k">if</span> (!fn) <span class="k">throw new</span> Error(<span class="c">"unknown operation '"</span> + name + <span class="c">"'"</span>);
-  <span class="k">const</span> g = pyGILEnsure();
-  <span class="k">try</span> {
-    <span class="k">const</span> result = fn(args || {});
-    <span class="k">const</span> e = pyErrText();
-    <span class="k">if</span> (e) <span class="k">throw new</span> Error(e);
-    <span class="k">return</span> { ok: <span class="k">true</span>, data: result === undefined ? <span class="k">null</span> : result };
-  } <span class="k">catch</span> (e) {
-    pyErrClear();
-    <span class="k">return</span> { ok: <span class="k">false</span>, error: String(e && e.message ? e.message : e) };
-  } <span class="k">finally</span> {
-    pyGILRelease(g);
-  }
-};</pre>
-    <figcaption><b>Figure 5.</b> The dispatcher inside FreeCAD. Errors raised by FreeCAD come back to the task agent as tool errors instead of crashing the session.</figcaption>
+    <figcaption><b>Figure 4.</b> The path of one tool call. Orange marks the part the agent discovered and injected.</figcaption>
   </figure>
 
   <!-- ===================================================== -->
-  <h2 id="results">Can agents do real work with the MCPs they build?</h2>
-  <p>The real measure of an MCP is the work an agent can do with it. After each build we freeze the MCP into an image and hand it to an agent with tasks the builder never saw. The same model builds the MCP and then uses it.</p>
+  <h2 id="results">Results</h2>
+  <p>After each build we froze the MCP and gave it to the same model, along with five FreeCAD tasks the builder never saw. They range from a nine-check plate edit to a two-part enclosure release with 26 linked features.</p>
 
   <dl class="setup">
-    <dt>Software</dt><dd>FreeCAD 0.20.2 on Debian 12 (x86-64), original binaries.</dd>
-    <dt>Build</dt><dd>One agent session per MCP, three-hour budget, offline sandbox. It gets the .deb packages, a manifest, REA, and a sandbox controller (shell, file writes, offline image build, smoke test). It does not get source, docs, examples, the network, or the tasks.</dd>
-    <dt>Memory only</dt><dd>Same prompt and sandbox, with REA and the target files withheld. The agent can still write, build and smoke-test an MCP; it cannot inspect or run FreeCAD.</dd>
-    <dt>Use</dt><dd>The task agent sees only the frozen MCP's tool list. The GUI condition gets screenshots, mouse and keyboard on the same FreeCAD, and code typed into consoles is blocked.</dd>
-    <dt>Scoring</dt><dd>After the run, an independent judge inspects the saved project and the exported files and checks 9 to 21 criteria per task. A task is fully done when every criterion passes. The untouched starting file already passes a few criteria, such as protected reference objects.</dd>
-    <dt>Models</dt><dd>Kimi K2.6 and GLM-5.3. Each model builds its own MCP and then uses it. Kimi K2.6 runs each task once per condition; GLM-5.3 runs each task three times with its MCP.</dd>
+    <dt>Build</dt><dd>Offline sandbox with a three-hour budget. The agent gets the .deb packages, a manifest, REA, and a sandbox controller for shell commands, image builds and smoke tests.</dd>
+    <dt>Memory only</dt><dd>The same build with REA and the target files withheld.</dd>
+    <dt>Use</dt><dd>The task agent sees only the frozen MCP's tool list. Computer use gets screenshots, mouse and keyboard on the same FreeCAD.</dd>
+    <dt>Scoring</dt><dd>A judge checks the saved project and exports against 9 to 21 criteria per task. Kimi K2.6 runs each task once per condition and GLM-5.3 three times.</dd>
   </dl>
 
   <div class="table-wrap">
     <table>
       <thead><tr><th>Task</th><th>What the agent must do</th><th class="num">Checks</th><th class="num">Deadline</th></tr></thead>
       <tbody>
-        <tr><td class="task">board-plate</td><td>Resize a mounting plate, move and resize its two through-holes, keep the linked cut features, save, export STEP and STL.</td><td class="num">9</td><td class="num">20 min</td></tr>
-        <tr><td class="task">cable-slot</td><td>The same revision, plus a new slot cut through the plate as a linked feature.</td><td class="num">10</td><td class="num">20 min</td></tr>
-        <tr><td class="task">service-standoffs</td><td>The same revision, plus four cylinder standoffs fused onto the plate in a dependency chain.</td><td class="num">10</td><td class="num">20 min</td></tr>
-        <tr><td class="task">lid-vent</td><td>Resize a sensor lid, move four screw holes, and cut five vent slots in sequence.</td><td class="num">13</td><td class="num">40 min</td></tr>
-        <tr><td class="task">enclosure</td><td>Release a two-part enclosure: shell, four posts, two port cutouts, a lid with four holes, six vents and a rotated label plate.</td><td class="num">21</td><td class="num">90 min</td></tr>
+        <tr><td class="task">board-plate</td><td>Resize a mounting plate and move its two holes, keeping the linked cuts. Save, then export STEP and STL.</td><td class="num">9</td><td class="num">20 min</td></tr>
+        <tr><td class="task">cable-slot</td><td>The same edit plus a slot cut through the plate.</td><td class="num">10</td><td class="num">20 min</td></tr>
+        <tr><td class="task">service-standoffs</td><td>The same edit plus four standoffs fused on in a chain.</td><td class="num">10</td><td class="num">20 min</td></tr>
+        <tr><td class="task">lid-vent</td><td>Resize a lid, move four screw holes and cut five vents in sequence.</td><td class="num">13</td><td class="num">40 min</td></tr>
+        <tr><td class="task">enclosure</td><td>Release a two-part enclosure. Shell, posts, port cutouts, lid holes, vents and a rotated label plate add up to 26 linked features.</td><td class="num">21</td><td class="num">90 min</td></tr>
       </tbody>
     </table>
   </div>
 
-  <div class="exp-head"><span class="exp-num">Experiment 1</span><h3>Does an agent do better with the MCP it built than with the GUI?</h3></div>
-  <p>Kimi K2.6 built its own FreeCAD MCP through the same loop and then ran all five tasks with it. We compare that against the same model working FreeCAD's GUI.</p>
-  <p><b>With its own MCP, Kimi passes 87% of checks and fully completes 3 of 5 tasks. Through the GUI it passes 33% and completes 1.</b> On four of the five tasks, the GUI run ended with exactly the score of the untouched starting file. The MCP run needed 62 minutes and 10.7 million tokens for all five tasks; the GUI run used 142 minutes and 65.8 million. On lid-vent, the MCP run finished in 4 minutes with 51 tool calls; the GUI run used its full 40 minutes. With typed tools, the agent spends its steps on the task itself instead of on finding the right field to click.</p>
+  <div class="exp-head"><span class="exp-num">Experiment 1</span><h3>Kimi K2.6 with its own MCP vs computer use</h3></div>
+  <p>We expected the MCP to help, but not by this much. <b>With the MCP it built, Kimi passed 87% of checks and finished three of five tasks. With computer use it passed 33% and finished one.</b> On four of the tasks the computer-use run ended at the starting file's score. Across all five, the MCP runs took 62 minutes and 10.7M tokens, against 142 minutes and 65.8M.</p>
+
+  <figure id="fig-video">
+    <div class="fig-tools">
+      <span class="vid-stat" id="vid-stat">MCP 18/21 in 16 min · computer use 2/21 in 47 min</span>
+      <div class="seg" role="group" aria-label="Task">
+        <button type="button" id="vid-enclosure" data-vid="enclosure" aria-pressed="true">Enclosure (long)</button>
+        <button type="button" id="vid-lid" data-vid="lid" aria-pressed="false">Lid vents</button>
+        <button type="button" id="vid-plate" data-vid="plate" aria-pressed="false">Board plate</button>
+      </div>
+    </div>
+    <div class="vid-wrap">
+      <video id="vid" controls playsinline preload="metadata" poster="media/enclosure.jpg" src="media/enclosure.mp4" aria-label="Kimi K2.6 on the enclosure task, computer use on the left and its own MCP on the right"></video>
+    </div>
+    <figcaption><b>Figure 5.</b> Kimi K2.6 on the same brief, computer use on the left and the MCP it built on the right. Real runs, sped up.</figcaption>
+  </figure>
 
   <figure id="fig-exp1">
     <div class="fig-tools">
@@ -503,28 +475,14 @@ rpc.exports.op = <span class="k">function</span> (name, args) {
       </div>
     </div>
     <div class="bc" id="chart-exp1"></div>
-    <div class="cost">
-      <div>
-        <h4>Time for all five tasks</h4>
-        <div class="hb">
-          <span>GUI</span><div class="hb-track"><div class="hb-fill s-gui" style="width:70%"></div><span class="hb-v" style="left:70%">142 min</span></div>
-          <span>Own MCP</span><div class="hb-track"><div class="hb-fill s-rea" style="width:30.6%"></div><span class="hb-v" style="left:30.6%">62 min</span></div>
-        </div>
-      </div>
-      <div>
-        <h4>Tokens for all five tasks</h4>
-        <div class="hb">
-          <span>GUI</span><div class="hb-track"><div class="hb-fill s-gui" style="width:70%"></div><span class="hb-v" style="left:70%">65.8M</span></div>
-          <span>Own MCP</span><div class="hb-track"><div class="hb-fill s-rea" style="width:11.4%"></div><span class="hb-v" style="left:11.4%">10.7M</span></div>
-        </div>
-      </div>
-    </div>
-    <figcaption><b>Figure 6.</b> Kimi K2.6 on the five FreeCAD tasks, through the GUI and through the MCP it built with REA. The dashed line in each group is the starting file's score. <b>Progress past the start</b> rescales each task so that the starting file is 0% and a full pass is 100%.</figcaption>
+    <figcaption><b>Figure 6.</b> Kimi K2.6 on all five tasks. The dashed line is the starting file's score. <b>Progress past the start</b> rescales each task so the starting file is 0% and a full pass is 100%.</figcaption>
   </figure>
 
-  <div class="exp-head"><span class="exp-num">Experiment 2</span><h3>What happens without REA?</h3></div>
-  <p>Frontier models have read plenty about FreeCAD. Do they need to probe it at all? To find out, we rerun the build with the same prompt and sandbox but withhold REA and the target files. The agent can still write code, build its image and list its tools. It just can't look at FreeCAD or run it, so everything it knows comes from training.</p>
-  <p><b>Without REA, neither model builds a working MCP.</b> GLM-5.3's MCP with REA passes every check on every task, in all 15 attempts. Its memory-only MCP makes no progress past the starting file on any task. Kimi's drops from 87% to 27% of checks, below its own GUI score.</p>
+  <h3>The long task</h3>
+  <p>The enclosure release is our longest task. It has two parts, 26 linked features, 21 checks and a 90-minute deadline. <b>GLM-5.3's MCP passed all 21 checks in each of its three attempts, in 79 seconds on average.</b> Kimi's MCP passed 18 of 21 in 16 minutes. Its computer-use run ended after 47 minutes at 2 of 21, the starting file's score.</p>
+
+  <div class="exp-head"><span class="exp-num">Experiment 2</span><h3>Without REA</h3></div>
+  <p>For this ablation we reran the build with the same prompt and sandbox but withheld REA and the target files. The agent could still write code, build its image and list its tools, with only the model's memory of FreeCAD to go on. We expected these memory-only MCPs to land well above computer use, since FreeCAD is popular and its Python API is widely documented. <b>They did not. GLM-5.3's memory-only MCP never got past the starting file, and Kimi's scored 27%, below its own computer-use run.</b> With REA, the same two models reached 100% and 87%.</p>
 
   <figure id="fig-exp2">
     <div class="fig-tools">
@@ -538,10 +496,10 @@ rpc.exports.op = <span class="k">function</span> (name, args) {
       <div class="bc" id="chart-glm"></div>
       <div class="bc dense" id="chart-kimi"></div>
     </div>
-    <figcaption><b>Figure 7.</b> Each model's MCP built with REA and from memory only, on the same five tasks. Kimi's GUI score is shown for reference. The dashed line is the starting file's score.</figcaption>
+    <figcaption><b>Figure 7.</b> Each model's MCP built with REA and from memory only. Kimi's computer-use score is shown for reference.</figcaption>
   </figure>
 
-  <p>The servers also differ in where their knowledge came from. We list every FreeCAD-defined name in each server's code (types, properties, functions) and check whether it appears in something the agent observed through REA during its build.</p>
+  <p>We also matched the FreeCAD names in each server's code against what the agent observed through REA during its build.</p>
 
   <figure>
     <div class="prov" role="img" aria-label="Share of FreeCAD names backed by REA observations: GLM-5.3 with REA 79 of 87; GLM-5.3 memory only 0 of 115; Kimi K2.6 with REA 51 of 63; Kimi K2.6 memory only 1 of 72.">
@@ -551,18 +509,17 @@ rpc.exports.op = <span class="k">function</span> (name, args) {
       <span class="lab">Kimi K2.6 · with REA</span><div class="hb-track"><div class="hb-fill s-rea" style="width:81%"></div></div><span class="pv">51 / 63</span>
       <span class="lab">Kimi K2.6 · memory only</span><div class="hb-track"><div class="hb-fill s-mem" style="width:1.4%"></div></div><span class="pv">1 / 72</span>
     </div>
-    <figcaption><b>Figure 8.</b> FreeCAD names in each server's code that are backed by an REA observation from its build. The memory-only servers use just as many FreeCAD names; none of them were checked against the program.</figcaption>
+    <figcaption><b>Figure 8.</b> FreeCAD names in each server that are backed by an REA observation from its build.</figcaption>
   </figure>
 
-  <h3>Why the memory-only MCPs fail</h3>
-  <p>We traced each memory-only server to the first step where it breaks.</p>
+  <h3>Where the memory-only MCPs break</h3>
+  <p>Both broke on the first call of every task.</p>
 
   <figure>
     <div class="fails">
       <div class="fail">
         <h4>Kimi K2.6, memory only</h4>
         <p class="head">Every call returns <span class="bad">Unknown command</span></p>
-        <p>The server advertises one set of tool names and forwards each one unchanged to a dispatcher whose branches use different names.</p>
         <table>
           <thead><tr><th>Advertised tool</th><th>Dispatcher branch</th></tr></thead>
           <tbody>
@@ -573,7 +530,7 @@ rpc.exports.op = <span class="k">function</span> (name, args) {
             <tr><td class="m">close_document</td><td class="m">close_doc</td></tr>
           </tbody>
         </table>
-        <p>The FreeCAD calls behind those branches, such as <code>FreeCAD.newDocument</code> and <code>FreeCAD.open</code>, are already written. No request can reach them. It fails at step 1 of all five tasks. During its build it never sent a single <code>tools/call</code>, and it finished by reporting “Everything is in good shape.”</p>
+        <p>The FreeCAD calls behind those branches are written correctly, and no request reaches them. During its build it made no <code>tools/call</code>, and it finished by reporting “Everything is in good shape.”</p>
       </div>
       <div class="fail">
         <h4>GLM-5.3, memory only</h4>
@@ -587,28 +544,20 @@ rpc.exports.op = <span class="k">function</span> (name, args) {
             <tr><td class="t">15:57:29.103</td><td>Server writes to a closed log stream; <code>TypeError</code>, MCP crashes</td></tr>
           </tbody>
         </table>
-        <p>This happens on the first call of every task. The memory-only build never ran FreeCAD, so it had no way to see the exit. A second memory-only GLM-5.3 build stopped after 22 steps without delivering a server.</p>
+        <p>The memory-only build could not run FreeCAD, so it never saw the exit. A second GLM-5.3 memory-only build stopped after 22 steps without a server.</p>
       </div>
     </div>
-    <figcaption><b>Figure 9.</b> The first failure in each memory-only MCP, from the benchmark logs.</figcaption>
+    <figcaption><b>Figure 9.</b> The first failure of each memory-only MCP, from the benchmark logs.</figcaption>
   </figure>
 
-  <div class="takeaway">
-    <p><b>Knowing the API was not the bottleneck.</b> Kimi's memory-only server already called the right FreeCAD functions. What memory cannot give an agent is contact with the running program: how it starts, which calls crash it, and whether its own server answers a request. REA gives the agent that contact, and the agent gets it before any task arrives.</p>
-  </div>
-
   <!-- ===================================================== -->
-  <h2 id="next">What comes next?</h2>
-  <p>In this post, an agent turned FreeCAD's binaries into a working MCP server in 18 minutes, and Kimi K2.6, using the MCP it built the same way, did far better than through the GUI. We believe this changes who has to write MCP servers. An application does not need to ship one: an agent can build it from the application itself.</p>
-  <ul>
-    <li><b>More software.</b> We are taking the same build-then-use protocol from FreeCAD to native desktop, JVM and web-service applications, with a task-blind builder and one state-based verifier for both MCP and GUI runs.</li>
-    <li><b>The docs lane.</b> Every run here kept documentation off, so step 2 ran on experiments alone. For software that ships a manual or an SDK, reading it first should make probing cheaper and the tools broader.</li>
-    <li><b>Build once, use many times.</b> A build takes minutes and is paid once per software version. Every task after that reuses the frozen MCP.</li>
-  </ul>
+  <h2 id="next">Next</h2>
+  <p>We are running the same build-then-use setup on JVM and web-service applications, and on software where the agent is allowed to read the documentation.</p>
 </article>
 
 <script src="js/pipeline.js"></script>
 <script src="js/timeline.js"></script>
+<script src="js/video.js"></script>
 <script src="js/charts.js"></script>
 </body>
 </html>

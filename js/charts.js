@@ -8,10 +8,10 @@
     { name: "cable-slot", short: "Slot", total: 10, start: 2 },
     { name: "service-standoffs", short: "Stand\u00adoffs", total: 10, start: 2 },
     { name: "lid-vent", short: "Vents", total: 13, start: 2 },
-    { name: "enclosure", short: "Enclo\u00adsure", total: 21, start: 2 }
+    { name: "enclosure (long)", short: "Enclo\u00adsure", total: 21, start: 2 }
   ];
   var RUNS = {
-    kimiGui: { label: "GUI", cls: "s-gui", counts: [9, 2, 2, 2, 2] },
+    kimiGui: { label: "Computer use", cls: "s-gui", counts: [9, 2, 2, 2, 2] },
     kimiRea: { label: "Own MCP, with REA", cls: "s-rea", counts: [9, 10, 5, 13, 18] },
     kimiMem: { label: "Own MCP, memory only", cls: "s-mem", counts: [3, 2, 4, 4, 2] },
     glmRea: { label: "Own MCP, with REA", cls: "s-rea", counts: [9, 10, 10, 13, 21] },
@@ -69,7 +69,7 @@
     h += '</div>';
     root.innerHTML = h;
     var desc = (cfg.title ? cfg.title + ". " : "Kimi K2.6. ") + cfg.runs.map(function (r) {
-      return RUNS[r].label + ": mean " + fmtMean(meanOf(r));
+      return RUNS[r].label + " mean " + fmtMean(meanOf(r));
     }).join("; ") + (scoreMode === "raw" ? " of checks passed." : " progress past the starting file.");
     root.setAttribute("role", "img");
     root.setAttribute("aria-label", desc);
