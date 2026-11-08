@@ -412,3 +412,31 @@ td.task { font-family: var(--mono); font-size: 13.5px; white-space: nowrap; }
 .vid-wrap { overflow: hidden; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
 .vid-wrap video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--panel); }
 .card .arrow { color: var(--fg); }
+
+/* ---------- Fruit Ninja ---------- */
+.duel { display: flex; align-items: flex-end; justify-content: center; flex-wrap: wrap; gap: 12px 32px; margin: 4px 0 22px; }
+.duel-side { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.duel-lab { font-size: 13px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--fg-2); }
+.duel-num { font-size: 68px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.duel-num.gui { color: var(--gui); }
+.duel-num.rea { color: var(--accent-ink); }
+.duel-vs { padding-bottom: 14px; font-size: 20px; color: var(--fg-2); }
+@media (max-width: 520px) { .duel-num { font-size: 52px; } }
+.fn-bars .hb { grid-template-columns: 104px minmax(0, 1fr); }
+.hb-track.stack { display: flex; }
+.s-rea-2 { background: color-mix(in srgb, var(--accent) 45%, var(--bg)); }
+.fn-legend { margin-top: 8px; }
+.fn-table { margin-top: 22px; }
+.fn-steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 720px) { .fn-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 400px) { .fn-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.fn-step {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0;
+  padding: 10px 11px 11px; font: inherit; text-align: left; color: var(--fg);
+  background: var(--bg); border: 1.3px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+.fn-step:hover { border-color: var(--accent); }
+.fn-step[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.fn-step .sd-num { width: 22px; height: 22px; font-size: 12px; transform: none; }
+.fn-step b { font-size: 15.5px; font-weight: 600; line-height: 1.2; }
+.fn-step small { font-size: 13px; line-height: 1.3; color: var(--fg-2); }

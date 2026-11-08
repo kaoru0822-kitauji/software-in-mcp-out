@@ -33,7 +33,7 @@
 
   <div class="tldr">
     <b>TL;DR</b>
-    <p><b>Hand an LLM agent the binaries of FreeCAD and a reverse-engineering toolkit, and 18 minutes later it returns a working MCP server, built without source code or docs.</b> With the MCP it built, Kimi K2.6 finishes 3 of 5 CAD tasks where computer use finishes 1. On our longest task, a two-part enclosure with 26 linked features, GLM-5.3 passes all 21 checks in 79 seconds on average. Take the toolkit away and let the model build from memory, and its MCP fails on the very first call.</p>
+    <p><b>Hand an LLM agent the binaries of FreeCAD and a reverse-engineering toolkit, and 18 minutes later it returns a working MCP server, built without source code or docs.</b> With the MCP it built, Kimi K2.6 finishes 3 of 5 CAD tasks where computer use finishes 1. On our longest task, a two-part enclosure with 26 linked features, GLM-5.3 passes all 21 checks in 79 seconds on average. On a browser Fruit Ninja, DeepSeek V4.1 Flash built its own MCP in 29 minutes, then scored 1268 points in a 60-second round where computer use scored 16. Take the toolkit away and let the model build from memory, and its MCP fails on the very first call.</p>
   </div>
 
   <figure class="teaser-fig" aria-label="Three results: build, use, remove REA">
@@ -551,6 +551,80 @@
   </figure>
 
   <!-- ===================================================== -->
+  <h2 id="fruit-ninja">Fruit Ninja</h2>
+  <p>The second app is a real-time browser game. We packaged a remake of Fruit Ninja, 855 lines of HTML with no API, and gave DeepSeek V4.1 Flash the same build loop. In 29 minutes and 146 turns it read the shipped game code, probed the live page through an adapter it wrote, and handed off an MCP with four tools. We froze that MCP and played one 60-second round with it on a fixed seed, against the same model using computer use.</p>
+
+  <figure id="fig-fn-video">
+    <div class="vid-wrap">
+      <video controls playsinline preload="metadata" poster="media/fruit-ninja.jpg" src="media/fruit-ninja.mp4" aria-label="Fruit Ninja showcase: DeepSeek builds its MCP, then one round with computer use on the left and the agent-built MCP on the right"></video>
+    </div>
+    <figcaption><b>Figure 10.</b> The build session, the frozen MCP, and one round each on the same seed, computer use on the left and the agent-built MCP on the right. Play is shown at 2× speed.</figcaption>
+  </figure>
+
+  <p><b>The MCP scored 1268 points. Computer use scored 16.</b> It sliced 328 of the 346 fruit that spawned, while computer use sliced 16 of 158 and let 138 fall.</p>
+
+  <figure id="fig-fn-score">
+    <div class="duel" role="img" aria-label="Final score: computer use 16, agent-built MCP 1268">
+      <div class="duel-side"><span class="duel-lab">Computer use</span><span class="duel-num gui">16</span></div>
+      <span class="duel-vs">vs</span>
+      <div class="duel-side"><span class="duel-lab">Own MCP</span><span class="duel-num rea">1268</span></div>
+    </div>
+    <div class="cost fn-bars">
+      <div>
+        <h4>Score</h4>
+        <div class="hb">
+          <span>Computer use</span><div class="hb-track"><div class="hb-fill s-gui" style="width:0.9%"></div><span class="hb-v" style="left:0.9%">16</span></div>
+          <span>Own MCP</span><div class="hb-track stack"><div class="hb-fill s-rea" style="width:35.1%;border-radius:0"></div><div class="hb-fill s-rea-2" style="width:34.9%"></div><span class="hb-v" style="left:70%">1268</span></div>
+        </div>
+        <div class="tl-legend fn-legend">
+          <span><i class="sw s-rea"></i>slice points</span>
+          <span><i class="sw s-rea-2"></i>combo bonus</span>
+        </div>
+      </div>
+      <div>
+        <h4>Fruit sliced</h4>
+        <div class="hb">
+          <span>Computer use</span><div class="hb-track"><div class="hb-fill s-gui" style="width:3.2%"></div><span class="hb-v" style="left:3.2%">16 of 158</span></div>
+          <span>Own MCP</span><div class="hb-track"><div class="hb-fill s-rea" style="width:66.4%"></div><span class="hb-v" style="left:66.4%">328 of 346</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap fn-table">
+      <table>
+        <thead><tr><th></th><th class="num">Computer use</th><th class="num">Own MCP</th></tr></thead>
+        <tbody>
+          <tr><td>Fruit escaped</td><td class="num">138</td><td class="num">12</td></tr>
+          <tr><td>Strokes</td><td class="num">19 drags</td><td class="num">48 paths</td></tr>
+          <tr><td>Frenzy mode</td><td class="num">never</td><td class="num">6.8–60 s</td></tr>
+          <tr><td>Median model reply</td><td class="num">1.82 s</td><td class="num">0.39 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption><b>Figure 11.</b> One 60-second round each, DeepSeek V4.1 Flash, same seed and game rules. Fruit spawned differs because frenzy mode doubles the supply.</figcaption>
+  </figure>
+
+  <h3>How the MCP plays</h3>
+  <p>The game keeps its state inside a closure, so the MCP rebuilds it from what the page draws. Its adapter wraps the page's Canvas 2D calls, and the builder worked out what each call means by reading the game code. A 320×320 <code>drawImage</code> is a fruit, a <code>fillRect</code> with a 0.43 : 0.26 aspect is a bomb's fuse, and each <code>clearRect</code> closes a frame. Every <code>slice</code> call then runs six steps and sends one native mouse path.</p>
+
+  <figure id="fig-fn-pipe">
+    <div class="fn-steps" role="group" aria-label="Steps inside one slice call">
+      <button type="button" class="fn-step" data-fn="1" aria-pressed="true"><span class="sd-num">1</span><b>Frames</b><small>draw calls into objects</small></button>
+      <button type="button" class="fn-step" data-fn="2" aria-pressed="false"><span class="sd-num">2</span><b>Tracks</b><small>match across frames</small></button>
+      <button type="button" class="fn-step" data-fn="3" aria-pressed="false"><span class="sd-num">3</span><b>Fit</b><small>ballistic fit per fruit</small></button>
+      <button type="button" class="fn-step" data-fn="4" aria-pressed="false"><span class="sd-num">4</span><b>Plan</b><small>fruit chain, bombs cleared</small></button>
+      <button type="button" class="fn-step" data-fn="5" aria-pressed="false"><span class="sd-num">5</span><b>Execute</b><small>one native mouse path</small></button>
+      <button type="button" class="fn-step" data-fn="6" aria-pressed="false"><span class="sd-num">6</span><b>Observe</b><small>new score back</small></button>
+    </div>
+    <div class="stage-detail" id="fn-detail" aria-live="polite"></div>
+    <figcaption><b>Figure 12.</b> Inside one <code>slice</code> call. Click a step to see what it does and, where it applies, what the builder wrote while making it.</figcaption>
+  </figure>
+
+  <p>In the round, the player model made 51 calls and spent 452 reasoning tokens in total. Forty-eight of those calls were <code>slice</code> with empty arguments. The model chose when to slice, and the MCP chose every target and every point of every stroke.</p>
+
+  <h3>Where the 1268 points come from</h3>
+  <p>All 48 strokes sliced at least three fruit inside the game's 0.34-second combo window, so each one earned a combo bonus. Slices brought 636 points and combos another 632. The 20th slice, 6.8 seconds into the round, switched on frenzy mode, which doubles points and the fruit supply and clears the bombs. The MCP kept slicing more than 20 fruit every 6 seconds, so frenzy never ended. Computer use sliced 16 fruit in the whole round, never reached frenzy, and played at the base spawn rate with bombs on screen.</p>
+
+  <!-- ===================================================== -->
   <h2 id="next">Next</h2>
   <p>We are running the same build-then-use setup on JVM and web-service applications, and on software where the agent is allowed to read the documentation.</p>
 </article>
@@ -559,5 +633,6 @@
 <script src="js/timeline.js"></script>
 <script src="js/video.js"></script>
 <script src="js/charts.js"></script>
+<script src="js/fruit.js"></script>
 </body>
 </html>
