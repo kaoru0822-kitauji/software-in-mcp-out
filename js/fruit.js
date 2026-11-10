@@ -1,10 +1,10 @@
-/* Figure 12: the six steps inside one Fruit Ninja slice call. */
+/* Figure 10: the six steps inside one Fruit Ninja slice call. */
 (function () {
   "use strict";
 
-  /* ---------------- Figure 12: Fruit Ninja slice pipeline ---------------- */
+  /* ---------------- Figure 10: Fruit Ninja slice pipeline ---------------- */
   var FN = {
-    1: { title: "Frames", text: "Each <code>clearRect</code> closes a frame. A 320×320 sprite drawn outside a clip is a fruit, a sprite under a clip is a sliced half, and the fuse-shaped <code>fillRect</code> marks a bomb.", quote: { who: "reading the game code, minute 1", text: "<code>fillRect</code> during play is only in drawBomb" } },
+    1: { title: "Frames", text: "Each <code>clearRect</code> closes a frame. A 320×320 sprite drawn outside a clip is a fruit, a sprite under a clip is a sliced half, and the fuse-shaped <code>fillRect</code> marks a bomb.", quote: { who: "reading the game binary, minute 1", text: "<code>fillRect</code> during play is only in drawBomb" } },
     2: { title: "Tracks", text: "Greedy nearest-neighbour matching with a 170 px gate links each object to the previous frame and keeps up to 26 samples per track. Objects that stop being drawn are dropped at once." },
     3: { title: "Fit", text: "A least-squares fit of position over time, using the game's own gravity <code>g = H × 1.03</code>, gives each fruit's velocity and its path for the next second.", quote: { who: "turn 89, tuning with practice rounds", text: "the velocity fit returns velocity at the <em>start</em> of the sample window" } },
     4: { title: "Plan", text: "Starting near the bottom centre, it chains the nearest fruit, solves when the blade can reach each one, and skips any segment that passes too close to a predicted bomb. A chain held 3 to 13 fruit, 6.9 on average." },

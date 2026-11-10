@@ -1,8 +1,8 @@
-/* Figures 6 and 7: per-task scores, as % of checks passed or as progress past the starting file. */
+/* Figures 5 and 6: per-task scores, as % of checks passed or as progress past the starting file. */
 (function () {
   "use strict";
 
-  /* ---------------- Figures 6 and 7: bar charts ---------------- */
+  /* ---------------- Figures 5 and 6: bar charts ---------------- */
   var TASKS = [
     { name: "board-plate", short: "Plate", total: 9, start: 3 },
     { name: "cable-slot", short: "Slot", total: 10, start: 2 },
