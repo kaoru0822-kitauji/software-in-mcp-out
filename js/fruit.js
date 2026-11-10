@@ -1,8 +1,8 @@
-/* Figure 12: the six steps inside one Fruit Ninja slice call. */
+/* Figure 10: the six steps inside one Fruit Ninja slice call. */
 (function () {
   "use strict";
 
-  /* ---------------- Figure 12: Fruit Ninja slice pipeline ---------------- */
+  /* ---------------- Figure 10: Fruit Ninja slice pipeline ---------------- */
   var FN = {
     1: { title: "Frames", text: "Each <code>clearRect</code> closes a frame. A 320×320 sprite drawn outside a clip is a fruit, a sprite under a clip is a sliced half, and the fuse-shaped <code>fillRect</code> marks a bomb.", quote: { who: "reading the game code, minute 1", text: "<code>fillRect</code> during play is only in drawBomb" } },
     2: { title: "Tracks", text: "Greedy nearest-neighbour matching with a 170 px gate links each object to the previous frame and keeps up to 26 samples per track. Objects that stop being drawn are dropped at once." },

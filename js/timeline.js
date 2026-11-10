@@ -20,7 +20,7 @@
     [16.5, 4, "Base image runs as uid 1000 and <code>RUN chmod</code> hits files it can't chown. Switching to <code>sh</code> invocation of the launch script (no chmod needed)."],
     [18.2, 4, "All 18 type identifiers and 55 identifier lines confirmed. Since I patched <code>agent.js</code> (error-string wording), re-validating end-to-end and rebuilding the image."]
   ];
-  var STAGE_NAMES = { 1: "Analyze", 2: "Look up / try", 3: "Build", 4: "Check & refine" };
+  var STAGE_NAMES = { 1: "Analyze", 2: "Test", 3: "Build", 4: "Check" };
   function pct(m) { return (m / END * 100).toFixed(3) + "%"; }
 
   var track = document.getElementById("tl-track");
