@@ -504,7 +504,7 @@
 
   <!-- ===================================================== -->
   <h2 id="fruit-ninja">Can built MCPs handle real-time tasks?</h2>
-  <p>CAD tasks let an agent take its time. In a real-time game, the time the model takes to reply is part of the score. Our goal here is to test whether an agent can build an interface that works under that pressure. We package a remake of Fruit Ninja, 855 lines of HTML with no API, and give DeepSeek V4.1 Flash the same build loop and REA. In 29 minutes and 146 turns, it reads the shipped game code, probes the live page through an adapter it wrote, and produces an MCP with four tools. We freeze that MCP and play one 60-second round with it, and one with the same model using computer use (Demo 2). Both rounds use the same seed, so that differences between them do not come from the game's randomness.</p>
+  <p>CAD tasks let an agent take its time. In a real-time game, the time the model takes to reply is part of the score. Our goal here is to test whether an agent can build an interface that works under that pressure. We package a remake of Fruit Ninja as a binary with no API, and give DeepSeek V4.1 Flash the same build loop and REA. In 29 minutes and 146 turns, it reads the game's logic out of the binary, probes the live page through an adapter it wrote, and produces an MCP with four tools. We freeze that MCP and play one 60-second round with it, and one with the same model using computer use (Demo 2). Both rounds use the same seed, so that differences between them do not come from the game's randomness.</p>
 
   <p><b>The MCP scored 1268 points and computer use scored 16.</b> The MCP sliced 328 of the 346 fruit that spawned. Computer use sliced 16 of 158 and let 138 fall.</p>
 
@@ -544,7 +544,7 @@
   </figure>
 
   <h3>How the MCP plays</h3>
-  <p>A model that needs 0.39 seconds or more to reply cannot react to each fruit itself, so something faster has to do the reacting. The agent's answer was to put that loop inside the tool. The game does not expose its state, so the MCP works out what is on screen from the page's drawing calls, using what the builder learned from the game code. Each <code>slice</code> call then predicts where the fruit are going, plans one stroke through a chain of them that avoids bombs, and carries it out as a single mouse path.</p>
+  <p>A model that needs 0.39 seconds or more to reply cannot react to each fruit itself, so something faster has to do the reacting. The agent's answer was to put that loop inside the tool. The game does not expose its state, so the MCP works out what is on screen from the page's drawing calls, using what the builder learned from the binary. Each <code>slice</code> call then predicts where the fruit are going, plans one stroke through a chain of them that avoids bombs, and carries it out as a single mouse path.</p>
 
   <figure id="fig-fn-pipe">
     <div class="fn-steps" role="group" aria-label="Steps inside one slice call">
