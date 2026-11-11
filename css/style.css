@@ -1,5 +1,5 @@
 /* Layout: one 760px reading column (Distill-style), a tinted title band, figures inside the column.
-   Colour: white page with a light yellow accent. In data charts, blue is the agent-built MCP and orange is computer use, matching the run videos. */
+   Colour: white page with a champagne bronze accent. In data charts, blue is the agent-built MCP and orange is computer use, matching the run videos. */
 :root {
   --bg: #ffffff;            /* white page */
   --card: #ffffff;
@@ -12,10 +12,10 @@
   --line: #d2d2d7;
   --rule: rgba(0, 0, 0, 0.1);
   --code-bg: #f5f5f7;
-  --accent: #f5c400;        /* light yellow: page accent, diagrams, the agent */
-  --accent-ink: #8f6b00;    /* small accent text, dark enough to read on white */
-  --accent-soft: #fff6cc;
-  --on-accent: #1d1d1f;
+  --accent: #a8874a;        /* champagne bronze: page accent, diagrams, the agent */
+  --accent-ink: #7a5f2c;    /* small accent text */
+  --accent-soft: #f6efe2;
+  --on-accent: #ffffff;
   --mcp: #3b76d9;           /* data colour for MCP-server runs: blue, as in the run videos */
   --gui: #e8710a;           /* data colour for computer-use runs: orange, as in the run videos */
   --gui-ink: #b4500a;
@@ -32,7 +32,7 @@
   :root:not([data-theme="light"]) {
     --bg: #0f0f10; --card: #1c1c1e; --fg: #f5f5f7; --fg-2: #a1a1a6; --band-a: #0f0f10; --band-b: #0f0f10; --band: #1c1c1e; --panel: #1c1c1e;
     --line: #48484a; --rule: rgba(255, 255, 255, 0.14); --code-bg: #2c2c2e;
-    --accent: #ffd60a; --accent-ink: #ffe066; --accent-soft: #3a3210; --on-accent: #1d1d1f;
+    --accent: #d2b077; --accent-ink: #e0c391; --accent-soft: #33291a; --on-accent: #1d1d1f;
     --mcp: #6fa3f2; --gui: #f59545; --gui-ink: #f7ac6b; --gui-soft: #3a2413; --mem: #8e8e93; --mem-soft: #2c2c2e;
     --ok: #5cc48d; --bad: #ec6a60; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
     color-scheme: dark;
@@ -41,7 +41,7 @@
 :root[data-theme="dark"] {
   --bg: #0f0f10; --card: #1c1c1e; --fg: #f5f5f7; --fg-2: #a1a1a6; --band-a: #0f0f10; --band-b: #0f0f10; --band: #1c1c1e; --panel: #1c1c1e;
   --line: #48484a; --rule: rgba(255, 255, 255, 0.14); --code-bg: #2c2c2e;
-  --accent: #ffd60a; --accent-ink: #ffe066; --accent-soft: #3a3210; --on-accent: #1d1d1f;
+  --accent: #d2b077; --accent-ink: #e0c391; --accent-soft: #33291a; --on-accent: #1d1d1f;
   --mcp: #6fa3f2; --gui: #f59545; --gui-ink: #f7ac6b; --gui-soft: #3a2413; --mem: #8e8e93; --mem-soft: #2c2c2e;
   --ok: #5cc48d; --bad: #ec6a60; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
@@ -91,7 +91,7 @@ h1 {
   letter-spacing: -0.03em;
   text-wrap: balance;
 }
-h1 .hl { color: var(--accent); background: linear-gradient(100deg, #ffd60a 0%, #ffb300 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+h1 .hl { color: var(--accent); background: linear-gradient(100deg, #c9a45c 0%, #8f6f37 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 h1 .nw { white-space: nowrap; }
 .subtitle { margin: 18px 0 0; font-size: 23px; font-weight: 400; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg-2); text-wrap: balance; }
 @media (max-width: 600px) { .band { padding-block: 44px 32px; } h1 { font-size: 44px; } .subtitle { font-size: 19px; } }
