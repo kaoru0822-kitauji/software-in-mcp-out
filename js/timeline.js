@@ -1,4 +1,4 @@
-/* Figure 2: every tool call of the 18-minute build, with numbered moments linked to the agent's own words. */
+/* Figure 2: every tool call of the 18-minute build. Clicking a numbered moment shows what the agent wrote then. */
 (function () {
   "use strict";
 
@@ -62,7 +62,7 @@
     b.textContent = i + 1;
     b.setAttribute("aria-label", "Moment " + (i + 1) + ", minute " + m[0]);
     b.setAttribute("aria-pressed", "false");
-    b.addEventListener("click", function () { selectMoment(i, true); });
+    b.addEventListener("click", function () { selectMoment(i, false); });
     marks.appendChild(b);
     markEls.push(b);
 
@@ -88,6 +88,7 @@
     marks.style.marginTop = (maxRow * 26) + "px";
   }
   layoutMarks();
+  selectMoment(1, false);
   window.addEventListener("resize", layoutMarks);
 
 
