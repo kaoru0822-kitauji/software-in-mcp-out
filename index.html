@@ -257,7 +257,7 @@
   </figure>
 
   <!-- ===================================================== -->
-  <h2 id="build">The agent spends most of the build testing the program, not writing code</h2>
+  <h2 id="build">What does the agent spend its time on during a build?</h2>
   <p>GLM-5.3's build for FreeCAD took 18 minutes and 152 tool calls. About two thirds of these calls tested the program. Writing the server took only 7 calls and about 20 seconds. For example, early in the build the agent found that FreeCAD's console program exits immediately if it is not started from a terminal, and it changed the server to start FreeCAD that way.</p>
 
   <figure class="tl" id="fig-tl">
@@ -284,7 +284,7 @@
   </figure>
 
   <h3>How a tool call reaches FreeCAD</h3>
-  <p>The server starts FreeCAD, attaches to it with Frida, and injects a small script into it. When the task agent calls a tool, the script makes a few calls to the Python interpreter inside FreeCAD. The server does not reimplement any CAD logic. FreeCAD does the modelling and writes the files.</p>
+  <p>The server lets the agent run FreeCAD's own operations with a tool call. It starts FreeCAD, attaches to it with Frida, and injects a small script into it. When the agent calls a tool, the script calls the matching FreeCAD functions inside the running program, for example to save a document or export a STEP file.</p>
 
   <figure>
     <div class="scroll-x">
