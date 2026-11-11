@@ -482,7 +482,7 @@
   <p>Agents can already analyze binaries with tools such as <a href="https://github.com/LaurieWired/GhidraMCP">GhidraMCP</a>, <a href="https://github.com/mrexodia/ida-pro-mcp">ida-pro-mcp</a> and <a href="https://arxiv.org/abs/2403.05286">LLM4Decompile</a>. We do not know of earlier work where the agent turns this analysis into a tool server and then does a user's tasks through the server.</p>
 
   <!-- ===================================================== -->
-  <h2 id="next">Next: let the agent shape its own link to the software</h2>
+  <h2 id="next">Next: let agents shape their own link to the environment</h2>
   <p>In our experiments, the agent builds the server only once, before it sees any task. After it starts to receive tasks, it does not update the server. But the agent still has the program, and it can go back to it at any time.</p>
   <p>The next step is to let the agent keep changing the server while it does tasks (Figure 9). The server is the agent's link to the software, and the agent built this link itself. So the agent can also decide what the link should look like. When a task is awkward with the current tools, the agent can go back to the binary and test how that part of the program behaves. Then it can add a tool, redesign a tool, or combine several steps into one tool. In Fruit Ninja, the agent already chose to build one <code>slice</code> tool that plans a whole stroke and performs it. Over time, the agent defines how it wants to work with the software, and the link evolves with the tasks it does. The server is code, so a later session or another agent can use it too.</p>
 
@@ -550,7 +550,7 @@
     <figcaption><b>Figure 9.</b> A sketch of the next step, not a result. Each line is one tool in the agent's server, and together the lines are the agent's link to the program.</figcaption>
   </figure>
 
-  <p>If this works, a program does not need to ship an agent interface for agents to use it well. An agent starts with only the installed program, designs for itself how to work with it, and gets better at using it over time. We are excited about agents that keep learning the software they use, and we hope this makes every program on a computer usable by agents.</p>
+  <p>If this works, a program does not need to ship an agent interface for agents to use it well. An agent starts with only the installed program, designs for itself how to work with it, and gets better at using it over time. Software is one kind of environment. We are excited about agents that shape their own links to the environments they work in, starting with the software on a computer.</p>
 </article>
 
 <nav class="versions col" id="versions" aria-label="Versions"><span>Version <b>v6</b> (latest)</span><a href="v5/">Switch to v5</a><a href="v4/">Switch to v4</a></nav>
