@@ -1,21 +1,21 @@
-/* Figures 5 and 6: per-task scores, as % of checks passed or as progress past the starting file. */
+/* Figures 4 and 6: per-task scores as % of checks passed. */
 (function () {
   "use strict";
 
-  /* ---------------- Figures 5 and 6: bar charts ---------------- */
+  /* ---------------- Figures 4 and 6: bar charts ---------------- */
   var TASKS = [
     { name: "board-plate", short: "Plate", total: 9, start: 3 },
     { name: "cable-slot", short: "Slot", total: 10, start: 2 },
     { name: "service-standoffs", short: "Stand\u00adoffs", total: 10, start: 2 },
     { name: "lid-vent", short: "Vents", total: 13, start: 2 },
-    { name: "enclosure (long)", short: "Enclo\u00adsure", total: 21, start: 2 }
+    { name: "enclosure", short: "Enclo\u00adsure", total: 21, start: 2 }
   ];
   var RUNS = {
     kimiGui: { label: "Computer use", cls: "s-gui", counts: [9, 2, 2, 2, 2] },
-    kimiRea: { label: "Own MCP, with REA", cls: "s-rea", counts: [9, 10, 5, 13, 18] },
-    kimiMem: { label: "Own MCP, memory only", cls: "s-mem", counts: [3, 2, 4, 4, 2] },
-    glmRea: { label: "Own MCP, with REA", cls: "s-rea", counts: [9, 10, 10, 13, 21] },
-    glmMem: { label: "Own MCP, memory only", cls: "s-mem", counts: [3, 2, 2, 2, 2] }
+    kimiRea: { label: "MCP server, built with REA", cls: "s-rea", counts: [9, 10, 5, 13, 18] },
+    kimiMem: { label: "MCP server, written from memory only", cls: "s-mem", counts: [3, 2, 4, 4, 2] },
+    glmRea: { label: "MCP server, built with REA", cls: "s-rea", counts: [9, 10, 10, 13, 21] },
+    glmMem: { label: "MCP server, written from memory only", cls: "s-mem", counts: [3, 2, 2, 2, 2] }
   };
   var CHARTS = [
     { el: "chart-exp1", title: null, runs: ["kimiGui", "kimiRea"] },
@@ -75,15 +75,6 @@
     root.setAttribute("aria-label", desc);
   }
   function drawAll() { CHARTS.forEach(drawChart); }
-  document.querySelectorAll("[data-score]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      scoreMode = b.getAttribute("data-score");
-      document.querySelectorAll("[data-score]").forEach(function (o) {
-        o.setAttribute("aria-pressed", o.getAttribute("data-score") === scoreMode ? "true" : "false");
-      });
-      drawAll();
-    });
-  });
   drawAll();
 
 
