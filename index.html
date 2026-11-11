@@ -259,6 +259,7 @@
   <!-- ===================================================== -->
   <h2 id="build">What does the agent spend its time on during a build?</h2>
   <p>GLM-5.3's build for FreeCAD took 18 minutes and 152 tool calls. About two thirds of these calls tested the program. Writing the server took only 7 calls and about 20 seconds. For example, early in the build the agent found that FreeCAD's console program exits immediately if it is not started from a terminal, and it changed the server to start FreeCAD that way.</p>
+  <p>Each tool that comes out of a build does one whole operation. For example, the server that Kimi K2.6 built has a <code>boolean_cut</code> tool, so cutting a vent into the lid is one call, <code>boolean_cut(name=Vented2, base=Vented1, tool=Vent2)</code>. With computer use, the same model worked through FreeCAD's menus and dialogs for 40 minutes and did not cut any vent.</p>
 
   <figure class="tl" id="fig-tl">
     <div class="tl-area">
