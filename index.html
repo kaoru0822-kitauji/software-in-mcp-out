@@ -33,7 +33,7 @@
 
   <div class="tldr">
     <b>TL;DR</b>
-    <p><b>We give a language agent only the compiled binaries of a program and a reverse-engineering toolkit. The agent builds its own tools for the program. With these tools, it uses the program much better than the same model does by operating the screen.</b> In FreeCAD, Kimi K2.6 finished one task <b>10× faster and with 57× fewer tokens</b> when it used the MCP server it built. Across five tasks it passed <b>87% of the checks with its MCP server and 33% with computer use</b>. In Fruit Ninja, a closed-source real-time game, DeepSeek V4.1 Flash <b>averaged 295 points with its MCP server and 79 points with computer use</b>.</p>
+    <p><b>We give a language agent only the compiled binaries of a program and a reverse-engineering toolkit, and the agent builds its own tools for the program. With these tools, it uses the program much better than the same model does by operating the screen.</b> In FreeCAD, Kimi K2.6 finished one task <b>10× faster and with 57× fewer tokens</b> when it used the MCP server it built, and across five tasks it passed <b>87% of the checks, compared with 33% with computer use</b>. In Fruit Ninja, a closed-source real-time game, DeepSeek V4.1 Flash <b>averaged 295 points with its MCP server, compared with 79 points with computer use</b>.</p>
   </div>
 
   <figure class="demo" id="demo-lid">
@@ -45,7 +45,7 @@
     <div class="vid-wrap">
       <video controls playsinline preload="metadata" poster="media/v6/lid-vent.jpg" src="media/v6/lid-vent.mp4" aria-label="Kimi K2.6 on the lid-vent task, computer use on the left and its MCP server on the right"></video>
     </div>
-    <figcaption><b>Demo 1.</b> Kimi K2.6 cuts vents into a lid in FreeCAD. The left side uses computer use. The right side uses the MCP server that the model built. The clocks show real elapsed time. Computer use ran until the 40-minute deadline and did not cut the vents.</figcaption>
+    <figcaption><b>Demo 1.</b> Kimi K2.6 cuts vents into a lid in FreeCAD, with computer use on the left and the MCP server that the model built on the right. The clocks show real elapsed time. Computer use ran until the 40-minute deadline without cutting the vents.</figcaption>
   </figure>
 
   <figure class="demo" id="demo-fruit">
@@ -57,11 +57,11 @@
     <div class="vid-wrap">
       <video controls playsinline preload="metadata" poster="media/v6/fruit-ninja.jpg" src="media/v6/fruit-ninja.mp4" aria-label="DeepSeek V4.1 Flash playing Fruit Ninja, computer use on the left and its MCP server on the right"></video>
     </div>
-    <figcaption><b>Demo 2.</b> DeepSeek V4.1 Flash plays a 60-second round of Fruit Ninja, shown at 2× speed. The left side uses computer use. The right side uses the MCP server that the model built from the game's binary.</figcaption>
+    <figcaption><b>Demo 2.</b> DeepSeek V4.1 Flash plays a 60-second round of Fruit Ninja at 2× speed, with computer use on the left and the MCP server that the model built from the game's binary on the right.</figcaption>
   </figure>
 
-  <p>With computer use, a language agent operates software the way a person does. It looks at screenshots and moves the mouse. This works on any program, but every step needs a new screenshot and a new model reply. Agents work better when a program offers tools that they can call directly, such as an MCP server (<a href="https://arxiv.org/abs/2410.16464">Song et al., 2024</a>; <a href="https://arxiv.org/abs/2510.24563">Jia et al., 2025</a>). So far, people have written these tools by hand or generated them from source code and documentation. For closed-source software, there is no source code to generate them from.</p>
-  <p>We ask whether an agent can build these tools itself when it has only the compiled binaries of the program. We give the agent <a href="https://github.com/morluto/rea">REA</a>, a reverse-engineering toolkit that can inspect binaries and instrument running processes. We do not give it source code, documentation or internet access. The agent studies the program and writes an MCP server for it. After that, the agent does its tasks through only this server, without using the screen, mouse or keyboard. We observed superior performance and call this <b>blind computer use</b>.</p>
+  <p>With computer use, a language agent operates software the way a person does, by looking at screenshots and moving the mouse. This works on any program, but every step needs a new screenshot and a new model reply, which makes it slow and expensive. Agents work better when a program offers tools that they can call directly, such as an MCP server (<a href="https://arxiv.org/abs/2410.16464">Song et al., 2024</a>; <a href="https://arxiv.org/abs/2510.24563">Jia et al., 2025</a>). However, these tools have so far been written by people or generated from source code and documentation, and closed-source software has no source code to generate them from.</p>
+  <p>We ask whether an agent can build these tools itself when it has only the compiled binaries of the program. We give the agent <a href="https://github.com/morluto/rea">REA</a>, a reverse-engineering toolkit that can inspect binaries and instrument running processes, but no source code, documentation or internet access. The agent studies the program and writes an MCP server for it, and then does its tasks through only this server, without using the screen, mouse or keyboard. We observed superior performance and call this <b>blind computer use</b>.</p>
 
   
   <!-- ===================================================== -->
@@ -71,9 +71,9 @@
     <li><b>Analyze.</b> The agent inspects the package and finds what the binaries expose.</li>
     <li><b>Test.</b> The agent runs the program and tries its guesses on it.</li>
     <li><b>Build.</b> The agent writes the MCP server.</li>
-    <li><b>Check.</b> The agent runs the server against the program. If a check fails because of a bug in the code, the agent goes back to step 3 and fixes the code. If the failure raises a new question about the program, the agent goes back to step 2 and tests it.</li>
+    <li><b>Check.</b> The agent runs the server against the program. If a check fails because of a bug in the code, the agent goes back to step 3 and fixes it, while a failure that raises a new question about the program sends the agent back to step 2 to test again.</li>
   </ol>
-  <p>We do not show the agent the benchmark tasks, so the agent has to decide by itself which operations the server should offer.</p>
+  <p>We do not show the agent the benchmark tasks, so that it has to decide by itself which operations the server should offer.</p>
 
   <figure class="pipe" id="fig-pipe">
     <div class="fig-tools">
@@ -253,12 +253,12 @@
     </svg>
 
     <div class="stage-detail" id="stage-detail" aria-live="polite"></div>
-    <figcaption><b>Figure 1.</b> The four steps of the build. The details come from GLM-5.3's FreeCAD build. A dashed arrow shows where the agent goes back to after a check fails. The bars under the steps show which tools the agent uses in each step.</figcaption>
+    <figcaption><b>Figure 1.</b> The four steps of the build, with details from GLM-5.3's FreeCAD build. A dashed arrow shows where the agent goes back to after a check fails, and the bars under the steps show which tools the agent uses in each step.</figcaption>
   </figure>
 
   <!-- ===================================================== -->
   <h2 id="build">What does the agent spend its time on during a build?</h2>
-  <p>GLM-5.3's build for FreeCAD took 18 minutes and 152 tool calls. About two thirds of these calls tested the program. Writing the server took only 7 calls and about 20 seconds. For example, early in the build the agent found that FreeCAD's console program exits immediately if it is not started from a terminal, and it changed the server to start FreeCAD that way.</p>
+  <p>GLM-5.3's build for FreeCAD took 18 minutes and 152 tool calls. About two thirds of these calls tested the program, while writing the server took only 7 calls and about 20 seconds. For example, early in the build the agent found that FreeCAD's console program exits immediately if it is not started from a terminal, and it changed the server to start FreeCAD that way.</p>
 
   <figure class="tl" id="fig-tl">
     <div class="tl-area">
@@ -284,7 +284,7 @@
   </figure>
 
   <h3>How a tool call reaches FreeCAD</h3>
-  <p>The server lets the agent run FreeCAD's own operations with a tool call. It starts FreeCAD, attaches to it with Frida, and injects a small script into it. When the agent calls a tool, the script calls the matching FreeCAD functions inside the running program, for example to save a document or export a STEP file.</p>
+  <p>The server lets the agent run FreeCAD's own operations with a tool call. It starts FreeCAD, attaches to it with Frida, and injects a small script into it, so that when the agent calls a tool, the script calls the matching FreeCAD functions inside the running program, for example to save a document or export a STEP file.</p>
 
   <figure>
     <div class="scroll-x">
@@ -352,7 +352,7 @@
 
   <!-- ===================================================== -->
   <h2 id="results">How well do agents work with the MCP servers they built?</h2>
-  <p>After each build finishes, the agent cannot change the server any more. We give the server to the same model, together with five FreeCAD tasks that the agent did not see during the build. Each task has multiple checks on the files the model saves. Each task starts from a project file that already passes a few of them.</p>
+  <p>After each build finishes, the agent cannot change the server any more. We give the server to the same model, together with five FreeCAD tasks that the agent did not see during the build. Each task has multiple checks on the files the model saves, and it starts from a project file that already passes a few of them.</p>
 
   <div class="table-wrap">
     <table>
@@ -369,7 +369,7 @@
 
 
   <div class="exp-head" id="exp1"><span class="exp-num">Main result</span><h3>Kimi K2.6 passed 87% of the checks with its MCP server and 33% with computer use</h3></div>
-  <p>Kimi K2.6 does each task twice, once with its MCP server and once with computer use. With computer use, Kimi completed the shortest task. On the other four tasks, it did not pass any check beyond the ones the starting file already passed. The MCP runs also cost less. The five tasks took 62 minutes and 10.7M tokens with the MCP server, and 142 minutes and 65.8M tokens with computer use. The build is a separate cost that the agent pays once per program, and GLM-5.3's build took 18 minutes.</p>
+  <p>Kimi K2.6 does each task twice, once with its MCP server and once with computer use. With computer use, Kimi completed the shortest task, but on the other four tasks it did not pass any check beyond the ones the starting file already passed. The MCP runs also cost less: the five tasks took 62 minutes and 10.7M tokens with the MCP server, compared with 142 minutes and 65.8M tokens with computer use. The build is a separate cost that the agent pays once per program, and GLM-5.3's build took 18 minutes.</p>
 
   <figure id="fig-exp1">
     <p class="fig-title">With computer use, Kimi completed one task and made no progress on the other four</p>
@@ -378,7 +378,7 @@
     <figcaption><b>Figure 4.</b> Kimi K2.6 on the five tasks. The dashed line shows how many checks the starting file already passes before the agent does anything.</figcaption>
   </figure>
 
-  <p>GLM-5.3 passed every check on all five tasks with the MCP server it built. It finished the longest task in 79 seconds on average.</p>
+  <p>GLM-5.3 passed every check on all five tasks with the MCP server it built, and finished the longest task in 79 seconds on average.</p>
 
   <figure id="fig-video">
     <p class="fig-title">Three of the five tasks, with the two runs shown side by side</p>
@@ -393,12 +393,12 @@
     <div class="vid-wrap">
       <video id="vid" controls playsinline preload="metadata" poster="media/v6/enclosure.jpg" src="media/v6/enclosure.mp4" aria-label="Kimi K2.6 on the enclosure task, computer use on the left and its MCP server on the right"></video>
     </div>
-    <figcaption><b>Figure 5.</b> Kimi K2.6 on three of the five tasks. The left side uses computer use and the right side uses its MCP server. Each side shows its real clock and the tokens it has used so far.</figcaption>
+    <figcaption><b>Figure 5.</b> Kimi K2.6 on three of the five tasks, with computer use on the left and its MCP server on the right. Each side shows its real clock and the tokens it has used so far.</figcaption>
   </figure>
 
 
   <div class="exp-head" id="exp2"><span class="exp-num">Ablation</span><h3>A server that the agent writes without access to the program does not work</h3></div>
-  <p>FreeCAD's Python API is widely documented, so a model might be able to write the server from memory. To check this, we run the build again, but this time we do not give the agent REA or FreeCAD's files. On the five tasks, GLM-5.3's server did not pass any check beyond the starting file, and Kimi's server passed 27% of the checks. The servers that the same models built with REA passed 100% and 87%. Both servers written from memory failed on the first tool call, before the call reached any FreeCAD API.</p>
+  <p>FreeCAD's Python API is widely documented, so a model might be able to write the server from memory. To check this, we run the build again without giving the agent REA or FreeCAD's files. On the five tasks, GLM-5.3's server did not pass any check beyond the starting file and Kimi's server passed 27% of the checks, while the servers that the same models built with REA passed 100% and 87%. Both servers written from memory failed on the first tool call, before the call reached any FreeCAD API.</p>
 
   <figure id="fig-exp2">
     </div>
@@ -411,8 +411,8 @@
 
     <!-- ===================================================== -->
   <h2 id="fruit-ninja">In a closed-source, real-time game, the model scores 3.7× higher with its MCP server</h2>
-  <p>FreeCAD is open source, and its tasks have no time pressure. Fruit Ninja is closed source and runs in real time. While the model is thinking, fruit falls off the screen.</p>
-  <p>We give DeepSeek V4.1 Flash the game's binary and REA, and it builds an MCP server in the same four steps. The same model then plays three 60-second rounds with the server and three rounds with computer use. <b>The model averaged 295.0 points per round with its MCP server and 78.7 points with computer use.</b> Most of the computer-use score is a bonus that the game adds when a round ends. In the round shown in Demo 2, the model earned 9 points during play with computer use and 288 points with its MCP server.</p>
+  <p>FreeCAD is open source and its tasks have no time pressure. Fruit Ninja is closed source and runs in real time, so fruit falls off the screen while the model is thinking.</p>
+  <p>We give DeepSeek V4.1 Flash the game's binary and REA, and it builds an MCP server in the same four steps. The same model then plays three 60-second rounds with the server and three rounds with computer use. <b>The model averaged 295.0 points per round with its MCP server, compared with 78.7 points with computer use.</b> Most of the computer-use score is a bonus that the game adds when a round ends: in the round shown in Demo 2, the model earned only 9 points during play with computer use, but 288 points with its MCP server.</p>
 
   <figure id="fig-fn-score">
     <p class="fig-title">During play, the model earned 288 points with its MCP server and 9 with computer use</p>
@@ -439,7 +439,7 @@
     <figcaption><b>Figure 7.</b> DeepSeek V4.1 Flash at Fruit Ninja. In the lower pair of bars, the solid part is points earned during play, and the faded part is bonuses added when the round ends.</figcaption>
   </figure>
 
-  <p>The server's <code>game_state</code> tool reads the score, the clock, and the fruit and bombs from the game process. Its <code>slice</code> tool plans one stroke through the fruit and performs it. The model does not need to find the fruit in an image.</p>
+  <p>The server's <code>game_state</code> tool reads the score, the clock, and the fruit and bombs from the game process, and its <code>slice</code> tool plans one stroke through the fruit and performs it, so the model does not need to find the fruit in an image.</p>
 
   <figure id="fig-fn-tools">
     <p class="fig-title">One of the four tools plans a whole stroke and performs it</p>
@@ -457,17 +457,17 @@
   <p>In this part, we share some of our interpretation of what we see in the results.</p>
 
   <h3>A skilled user knows which operations to do without studying the screen</h3>
-  <p>An experienced FreeCAD user does not need to analyze the screen to know what to do next. To cut a vent into a lid, they already know the operations: make a box, place it, and subtract it from the lid. In the GOMS model of skilled computer use, an expert knows goals and the methods that reach them, and clicks and keystrokes are only how the methods get carried out (Card, Moran and Newell, 1983). Blind people use software through a screen reader that reads the names of the buttons and menus aloud. Experienced users often write scripts instead of clicking.</p>
+  <p>An experienced FreeCAD user does not need to analyze the screen to know what to do next. To cut a vent into a lid, they already know the operations: make a box, place it, and subtract it from the lid. The GOMS model of skilled computer use describes expertise in the same way: an expert knows goals and the methods that reach them, while clicks and keystrokes are only how the methods get carried out (Card, Moran and Newell, 1983). This is also why blind people can use software through a screen reader that reads the names of the buttons and menus aloud, and why experienced users often write scripts instead of clicking.</p>
 
   <h3>A model works with a tool call more cheaply than with a screenshot</h3>
-  <p>The same information can be easy or hard to use depending on how it is presented. A person reads a diagram faster than a paragraph that says the same thing (<a href="https://doi.org/10.1111/j.1551-6708.1987.tb00863.x">Larkin and Simon, 1987</a>). A language model is the opposite, and works with text more cheaply than with images. The call <code>add_box(length=40, width=3, height=7)</code> and a screenshot of the lid describe the same step. With the screenshot, the model has to find the right field, work out where to click, and read the result from another screenshot. On lid-vent, computer use spent 17.2M tokens and the MCP run spent 0.3M.</p>
+  <p>The same information can be easy or hard to use depending on how it is presented. A person reads a diagram faster than a paragraph that says the same thing (<a href="https://doi.org/10.1111/j.1551-6708.1987.tb00863.x">Larkin and Simon, 1987</a>), but a language model is the opposite and works with text more cheaply than with images. The call <code>add_box(length=40, width=3, height=7)</code> and a screenshot of the lid describe the same step, but with the screenshot the model has to find the right field, work out where to click, and read the result from another screenshot. On lid-vent, computer use spent 17.2M tokens, while the MCP run spent 0.3M.</p>
 
   <h3>An agent can play with the software before it has a task</h3>
-  <p>In our setting, the agent gets time to play with the program before it receives any task. It starts the program, tries things to see what happens, and learns what the program can do. About two thirds of the calls in GLM-5.3's build were like this. They added nothing to the server and only showed the agent how the program behaves. A Tetris player does something similar when they rotate a piece just to see where it fits (<a href="https://doi.org/10.1207/s15516709cog1804_1">Kirsh and Maglio, 1994</a>). After that, the agent turns what it learned into tools, so it is ready for tasks it has not seen yet.</p>
+  <p>In our setting, the agent gets time to play with the program before it receives any task. It starts the program, tries things to see what happens, and learns what the program can do. About two thirds of the calls in GLM-5.3's build were like this: they added nothing to the server and only showed the agent how the program behaves, much like a Tetris player who rotates a piece just to see where it fits (<a href="https://doi.org/10.1207/s15516709cog1804_1">Kirsh and Maglio, 1994</a>). The agent then turns what it learned into tools, so that it is ready for tasks it has not seen yet.</p>
 
   <!-- ===================================================== -->
   <h2 id="related">How this relates to prior work</h2>
-  <p>Earlier work shows that agents do better with APIs or MCP tools than with only the screen. This has been shown on the web (<a href="https://arxiv.org/abs/2410.16464">Song et al.</a>), in IDEs (<a href="https://arxiv.org/abs/2502.18525">Aggarwal and Welleck</a>) and on the desktop (<a href="https://arxiv.org/abs/2504.14603">UFO2</a>, <a href="https://arxiv.org/abs/2508.03923">CoAct-1</a>, <a href="https://arxiv.org/abs/2510.24563">OSWorld-MCP</a>, <a href="https://arxiv.org/abs/2506.07672">MCPWorld</a>). We ask a different question: where do the tools come from when nobody has written them?</p>
+  <p>Earlier work shows that agents do better with APIs or MCP tools than with only the screen, on the web (<a href="https://arxiv.org/abs/2410.16464">Song et al.</a>), in IDEs (<a href="https://arxiv.org/abs/2502.18525">Aggarwal and Welleck</a>) and on the desktop (<a href="https://arxiv.org/abs/2504.14603">UFO2</a>, <a href="https://arxiv.org/abs/2508.03923">CoAct-1</a>, <a href="https://arxiv.org/abs/2510.24563">OSWorld-MCP</a>, <a href="https://arxiv.org/abs/2506.07672">MCPWorld</a>). We ask a different question: where do the tools come from when nobody has written them?</p>
   <div class="table-wrap">
     <table class="rel">
       <thead><tr><th>Where the tools come from</th><th>What it needs</th><th>Examples</th></tr></thead>
@@ -483,8 +483,8 @@
 
   <!-- ===================================================== -->
   <h2 id="next">Next: let agents shape their own link to the environment</h2>
-  <p>In our experiments, the agent builds the server only once, before it sees any task. After it starts to receive tasks, it does not update the server. But the agent still has the program, and it can go back to it at any time.</p>
-  <p>The next step is to let the agent keep changing the server while it does tasks (Figure 9). The server is the agent's link to the software, and the agent built this link itself. So the agent can also decide what the link should look like. When a task is awkward with the current tools, the agent can go back to the binary and test how that part of the program behaves. Then it can add a tool, redesign a tool, or combine several steps into one tool. In Fruit Ninja, the agent already chose to build one <code>slice</code> tool that plans a whole stroke and performs it. Over time, the agent defines how it wants to work with the software, and the link evolves with the tasks it does. An MCP server built this way can also be shared with other agents.</p>
+  <p>In our experiments, the agent builds the server only once, before it sees any task, and does not update it after it starts to receive tasks. However, the agent still has the program and can go back to it at any time.</p>
+  <p>The next step is to let the agent keep changing the server while it does tasks (Figure 9). The server is the agent's link to the software, and since the agent built this link itself, it can also decide what the link should look like. When a task is awkward with the current tools, the agent can go back to the binary, test how that part of the program behaves, and then add a tool, redesign a tool, or combine several steps into one tool. In Fruit Ninja, the agent already chose to build one <code>slice</code> tool that plans a whole stroke and performs it. Over time, the agent defines how it wants to work with the software, and the link evolves with the tasks it does. An MCP server built this way can also be shared with other agents.</p>
 
   <figure id="fig-vision">
     <p class="fig-title">The agent keeps reshaping its link to the program as it works</p>
@@ -550,7 +550,7 @@
     <figcaption><b>Figure 9.</b> A sketch of the next step, not a result. Each line is one tool in the agent's server, and together the lines are the agent's link to the program.</figcaption>
   </figure>
 
-  <p>If this works, a program does not need to ship an agent interface for agents to use it well. An agent starts with only the installed program, designs for itself how to work with it, and gets better at using it over time. Software is one kind of environment. We are excited about agents that shape their own links to the environments they work in, starting with the software on a computer.</p>
+  <p>If this works, a program does not need to ship an agent interface for agents to use it well, because an agent can start with only the installed program, design for itself how to work with it, and get better at using it over time. Software is one kind of environment. We are excited about agents that shape their own links to the environments they work in, starting with the software on a computer.</p>
 </article>
 
 <nav class="versions col" id="versions" aria-label="Versions"><span>Version <b>v6</b> (latest)</span><a href="v5/">Switch to v5</a><a href="v4/">Switch to v4</a></nav>
